@@ -1,0 +1,32 @@
+----------R1
+config t
+int f0/0
+ip add 192.168.40.1 255.255.255.128
+no shut
+
+int f0/1
+ip add 192.168.40.129 255.255.255.128
+no shut
+
+ip dhcp pool ACCOUNTS
+network 192.168.40.0 255.255.255.128
+default-router 192.168.40.1
+dns-server 8.8.8.8
+
+ip dhcp pool DELIVERY
+network 192.168.40.128 255.255.255.128
+default-router 192.168.40.129
+dns-server 8.8.8.8
+
+end
+wr
+
+---verification
+ip show int brief
+show ip route
+
+
+---------PC
+dhcp
+
+You'll get an ip then you can ping other systems in any network as they are connected to the same router directly.
