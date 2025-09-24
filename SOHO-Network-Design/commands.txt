@@ -1,0 +1,79 @@
+---------- Switch
+
+en
+conf t
+int range fa0/2-4
+switchport mode access
+switchport access vlan 10
+
+int range fa0/5-7
+switchport mode access
+switchport access vlan 20
+
+int range fa0/8-10
+switchport mode access
+switchport access vlan 30
+
+do wr
+
+do show start
+
+int fa0/1
+switchport mode trunk
+
+do wr
+
+
+---------- Access points
+
+port 1 - configure SSID and WPA2 password for every access point.
+
+
+---------- R1
+en
+config t
+int gig0/0
+no shut
+do wr
+
+int gig0/0.10
+encapsulation dot1Q 10
+ip address 192.168.1.1 255.255.255.192
+
+int gig0/0.20
+encapsulation dot1Q 20
+ip address 192.168.1.65 255.255.255.192
+
+int gig0/0.30
+encapsulation dot1Q 30
+ip address 192.168.1.129 255.255.255.192
+
+do wr
+exit
+
+do show start
+
+service dhcp
+
+ip dhcp pool IT-Pool
+network 192.168.1.0 255.255.255.192
+default-router 192.168.1.1
+dns-server 8.8.8.8
+exit
+
+ip dhcp pool Finance-Pool
+network 192.168.1.64 255.255.255.192
+default-router 192.168.1.65
+dns-server 8.8.8.8
+exit
+
+ip dhcp pool Reception-Pool
+network 192.168.1.128 255.255.255.192
+default-router 192.168.1.129
+dns-server 8.8.8.8
+exit
+
+Now you can connect to the wifi access points from  smartphones, laptops, tablets.
+
+
+
