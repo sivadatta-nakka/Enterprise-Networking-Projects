@@ -1,4 +1,4 @@
-# Hotel Networking Project
+# Hotel Management Networking Project
 
 ![Network Topology](topology.png)
 
