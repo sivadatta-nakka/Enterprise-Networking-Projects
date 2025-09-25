@@ -1,4 +1,4 @@
-# Simple Networking Projects
+# Enterprise Networking Projects
 
 A collection of small networking projects using GNS3 and Cisco Packet Tracer.
 
