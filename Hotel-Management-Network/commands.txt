@@ -1,0 +1,318 @@
+----------------All Routers (are connected with serial DC)
+en
+config t
+int se0/2/0
+no shut
+int se0/2/1
+no shut
+int gig0/0
+no shut
+
+int se0/2/0
+clock rate ? (Only for the int which has clock symbol)
+clock rate 64000 (64000 is recommended)
+int se0/2/1
+clock rate 64000 
+do wr
+
+----------------F1-Switch
+en
+config t
+
+int range fa0/2-3
+switchport mode access
+switchport acces vlan 80
+
+int range fa0/4-5
+switchport mode access
+switchport access vlan 70
+
+int range fa0/6-8
+switchport mode access
+switchport access vlan 60
+
+int range fa0/1
+switchport mode trunk
+
+do wr
+
+----------------F2-Switch
+en
+config t
+
+int range fa0/2-3
+switchport mode access
+switchport access vlan 50
+
+int range fa0/4-5
+switchport mode access
+switchport access vlan 40
+
+int range fa0/6-8
+switchport mode access
+switchport access vlan 30
+
+int range fa0/1
+switchportn mode trunk
+
+do wr
+
+----------------F3-Switch
+en
+config t
+
+int range fa0/2-3
+switchport mode access
+switchport access vlan 10
+
+int range fa0/4-6
+switchport mode access
+switchport access vlan 20
+
+int range fa0/1
+switchport mode trunk
+
+do wr
+
+----------------F1-Router
+int se0/2/0
+ip add 10.10.10.5 255.255.255.252
+
+int se0/2/1
+ip add 10.10.10.9 255.255.255.252
+
+do wr
+
+----------------F2-Router
+int se0/2/0
+ip add 10.10.10.10 255.255.255.252
+
+int se0/2/1
+ip add 10.10.10.10.1 255.255.255.252
+
+do wr
+
+----------------F3-Router
+int se0/2/0
+ip add 10.10.10.6 255.255.255.252
+
+int se0/2/1
+ip add 10.10.10.2 255.255.255.252
+
+do wr
+
+----------------F1-Router
+int gig0/0.80
+encapsulation dot1Q 80
+ip add 192.168.8.1 255.255.255.0
+
+int gig0/0.70
+encapsulation dot1Q 70
+ip add 192.168.7.1 255.255.255.0
+
+int gig0/0.60
+encapsulation dot1Q 60
+ip add 192.168.6.1 255.255.255.0
+
+do wr
+
+service dhcp
+ip dhcp pool Reception
+network 192.168.8.0 255.255.255.0
+default-router 192.168.8.1
+dns-server 192.168.8.1
+exit
+
+ip dhcp pool Store
+network 192.168.7.0 255.255.255.0
+default-router 192.168.7.1
+dns-server 192.168.7.1
+exit
+
+ip dhcp pool Logistics
+network 192.168.6.0 255.255.255.0
+default-router 192.168.6.1
+dns-server 192.168.6.1
+exit
+
+do wr
+
+
+----------------F2-Router
+int gig0/0.30
+encapsulation dot1Q 30
+ip add 192.168.3.1 255.255.255.0
+
+int gig0/0.40
+encapsulation dot1Q 40
+ip add 192.168.4.1 255.255.255.0
+
+int gig0/0.50
+encapsulation dot1Q 50
+ip add 192.168.5.1 255.255.255.0
+
+do wr
+
+service dhcp
+
+ip dhcp pool Sales
+network 192.168.3.0 255.255.255.0
+default-router 192.168.3.1
+dns-server 192.168.3.1
+exit
+
+ip dhcp pool HR
+network 192.168.4.0 255.255.255.0
+default-router 192.168.4.1
+dns-server 192.168.4.1
+exit
+
+ip dhcp pool Finance
+network 192.168.5.0 255.255.255.0
+default-router 192.168.5.1
+dns-server 192.168.5.1
+exit
+
+do wr
+
+----------------F3-Router
+int gig0/0.10
+encapsulation dot1Q 10
+ip add 192.168.1.1 255.255.255.0
+
+int gig0/0.20
+encapsulation dot1Q 20
+ip add 192.168.2.1 255.255.255.0
+
+service dhcp
+
+ip dhcp pool IT
+network 192.168.1.0 255.255.255.0
+default-router 192.168.1.1
+dns-server 192.168.1.1
+exit
+
+ip dhcp pool Admin
+network 192.168.2.0 255.255.255.0
+default-router 192.168.2.1
+dns-server 192.168.2.1
+exit
+
+do wr
+
+---------------
+
+Now try to ping ip of a network from another network and it say "Destination Host Unreachable"
+For this, Now we configure the OSPF routing.
+
+----------------F1-Router
+en
+config t
+router ospf 10
+network 10.10.10.4 0.0.0.3 area 0
+network 10.10.10.8 0.0.0.3 area 0
+network 192.168.8.0 0.0.0.255 area 0
+network 192.168.7.0 0.0.0.255 area 0
+network 192.168.6.0 0.0.0.255 area 0
+
+do wr
+
+----------------F2-Router
+router ospf 10
+network 10.10.10.0 0.0.0.3 area 0
+network 10.10.10.8 0.0.0.3 area 0
+network 192.168.3.0 0.0.0.255 area 0
+network 192.168.4.0 0.0.0.255 area 0
+network 192.168.5.0 0.0.0.255 area 0
+
+do wr
+
+----------------F3-Router
+router ospf 10
+network 10.10.10.0 0.0.0.3 area 0
+network 10.10.10.4 0.0.0.3 area 0
+network 192.168.1.0 0.0.0.255 area 0
+network 192.168.2.0 0.0.0.255 area 0
+
+do wr
+
+----------------
+Now set SSID and Passwords for Access Points.
+Add a smart phone, tablet, pc and try to connect them to the Wifi Access Point.
+You can successfully connect to the Wifi.
+
+----------------SSH Configuration
+----------------F3-Router
+hostname F3-Router
+ip domain-name floor3
+username floor3 password floor3
+crypto key generate rsa
+How many bits in the modulus [512]: 1024
+line vty 0 15
+login local
+transport input ssh
+
+do wr
+exit
+
+----------------F2-Router
+hostname F2-Router
+ip domain-name floor2
+username floor2 password floor2
+crypto key generate rsa
+How many bits in the modulus [512]: 1024
+line vty 0 15
+login local
+transport input ssh
+
+do wr
+exit
+
+----------------F1-Router
+hostname F1-Router
+ip domain-name floor1
+username floor1 password floor1
+crypto key generate rsa
+How many bits in the modulus [512]: 1024
+line vty 0 15
+login local
+transport input ssh
+
+do wr
+exit
+
+----------------Test ssh from TEST-PC
+
+ssh -l username ip_of_the_router_(any_interface)
+password: enter_pass
+hostname>
+
+ex:
+ssh -l floor2 10.10.10.1
+password: floor2
+F2-Router>
+:)
+
+----------------F3-Switch
+en
+config t
+interface fa0/2 (switch to device int)
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation ?
+switchport port-security shutdown
+
+do wr
+
+----------------Verify Port-Security on F3-Switch
+do show start
+
+observe the interface fa0/2 with port sec
+
+do show port-security
+(shows the port with port sec)
+
+do sh start
+
+:)
